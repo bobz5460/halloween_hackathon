@@ -1,9 +1,9 @@
 package org.example;
 
 public class Entity {
-    String name;
-    int x, y, velocity_x, velocity_y, type, hitbox_length, hitbox_height;
-    public Entity(String name, int x, int y, int velocity_x, int velocity_y, int hitbox_length, int hitbox_height, int type){
+    String name, type;
+    int x, y, velocity_x, velocity_y, hitbox_length, hitbox_height;
+    public Entity(String name, int x, int y, int velocity_x, int velocity_y, int hitbox_length, int hitbox_height, String type){
         this.name = name;
         this.x = x;
         this.y = y;

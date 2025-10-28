@@ -7,15 +7,22 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import com.google.gson.Gson;
 
 public class SocketServer extends WebSocketServer {
-    public SocketServer(int port) throws UnknownHostException {
+    Game game;
+
+    public SocketServer(int port, Game game) throws UnknownHostException {
         super(new InetSocketAddress(port));
+        this.game = game;
     }
 
     public SocketServer(InetSocketAddress address) {
@@ -28,7 +35,7 @@ public class SocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         conn.send("connected");
-
+        this.game.entityList.put(conn, new Entity(null,0,0,0,0,10,10, "player"));
     }
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
@@ -38,6 +45,13 @@ public class SocketServer extends WebSocketServer {
     public void onMessage(WebSocket conn, String message) {
         //takes direction player wants to travel and other user input maybe
         //message should be json
+        Gson gson = new Gson();
+        Map<String, Object> map = gson.fromJson(message, Map.class);
+        String msg_type = (String) map.get("msg_type");
+        switch (msg_type) {
+            case "name":
+                this.game.entityList.get(conn).name = (String) map.get("name");
+        }
     }
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
