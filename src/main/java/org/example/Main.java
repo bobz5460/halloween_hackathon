@@ -5,5 +5,6 @@ import org.java_websocket.server.WebSocketServer;
 
 public class Main {
     public static void main(String[] args) {
+
         }
     }
