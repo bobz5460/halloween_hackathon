@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Game {
-    ConcurrentHashMap<WebSocket, Entity> entityList;
-    public Game(ConcurrentHashMap<WebSocket, Entity> entityList) {
+    public ConcurrentHashMap<WebSocket, Entity> entityList = new ConcurrentHashMap<>();
+
+    public Game() {
         this.entityList = entityList;
     }
 }

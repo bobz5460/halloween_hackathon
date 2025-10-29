@@ -21,17 +21,20 @@ public class Entity {
         return new Integer[]{velocity_x, velocity_y};
     }
     public void setPos(Integer[] pos){
-        this.x = pos[0];
-        this.y = pos[1];
+        x = pos[0];
+        y = pos[1];
     }
     public void setVel(Integer[] vel){
         this.velocity_x = vel[0];
         this.velocity_y = vel[1];
+        System.out.println("set vel");
+        System.out.println(vel[0] + " " + vel[1]);
     }
     public void applyVel(){
-        this.x += this.velocity_x;
-        this.y += this.velocity_y;
-
+        x += velocity_x;
+        y += velocity_y;
+        System.out.println("apply vel");
+        System.out.println(x + " " + y);
     }
 
 }

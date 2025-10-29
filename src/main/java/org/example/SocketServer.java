@@ -18,15 +18,16 @@ import org.java_websocket.server.WebSocketServer;
 import com.google.gson.Gson;
 
 public class SocketServer extends WebSocketServer {
-    Game game;
+    public Game game;
 
-    public SocketServer(int port, Game game) throws UnknownHostException {
+    public SocketServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
-        this.game = game;
+
     }
 
-    public SocketServer(InetSocketAddress address) {
+    public SocketServer(InetSocketAddress address, Game game) {
         super(address);
+        this.game = game;
     }
 
     public SocketServer(int port, Draft_6455 draft) {
@@ -35,7 +36,7 @@ public class SocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         conn.send("connected");
-        this.game.entityList.put(conn, new Entity(null,0,0,0,0,10,10, "player"));
+        game.entityList.put(conn, new Entity(null,0,0,0,0,10,10, "player"));
     }
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
@@ -45,12 +46,22 @@ public class SocketServer extends WebSocketServer {
     public void onMessage(WebSocket conn, String message) {
         //takes direction player wants to travel and other user input maybe
         //message should be json
+        System.out.println("Received message");
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(message, Map.class);
         String msg_type = (String) map.get("msg_type");
         switch (msg_type) {
             case "name":
-                this.game.entityList.get(conn).name = (String) map.get("name");
+                game.entityList.get(conn).name = (String) map.get("name");
+            case "direction":
+                System.out.println("direction");
+                String direction = (String) map.get("direction");
+                if(direction.equals("up")){game.entityList.get(conn).setVel(new Integer[]{0,1});}
+                else if(direction.equals("down")){game.entityList.get(conn).setVel(new Integer[]{0,-1});}
+                else if(direction.equals("left")){game.entityList.get(conn).setVel(new Integer[]{-1,0});}
+                else if(direction.equals("right")){game.entityList.get(conn).setVel(new Integer[]{1,0});}
+            case "depress":
+                game.entityList.get(conn).setVel(new Integer[]{0,0});
         }
     }
     @Override
@@ -71,5 +82,13 @@ public class SocketServer extends WebSocketServer {
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
     }
-
+    public void StepTick(){
+        for (Entity entity : game.entityList.values()) {
+            entity.applyVel();
+            System.out.println(entity.getVel()[1]);
+        }
+        Gson gson = new Gson();
+        String json = gson.toJson(game.entityList.values());
+        broadcast(json);
+    }
 }

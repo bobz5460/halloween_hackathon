@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    const chatSocket = new WebSocket(
+        'ws://'
+        + '127.0.0.1'
+        + ':6767'
+    );
+    chatSocket.onmessage = function (event) {
+        const message = JSON.parse(event.data);
+        console.log(message);
+    }
+    addEventListener("keydown", function (event) {
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            chatSocket.send(JSON.stringify({'msg_type': 'direction', 'direction': 'up'}));
+        }
+    })
+</script>
+</html>
