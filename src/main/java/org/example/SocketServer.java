@@ -60,8 +60,8 @@ public class SocketServer extends WebSocketServer {
                 else if(direction.equals("down")){game.entityList.get(conn).setVel(new Integer[]{0,-1});}
                 else if(direction.equals("left")){game.entityList.get(conn).setVel(new Integer[]{-1,0});}
                 else if(direction.equals("right")){game.entityList.get(conn).setVel(new Integer[]{1,0});}
-            case "depress":
-                game.entityList.get(conn).setVel(new Integer[]{0,0});
+            //case "depress":
+                //game.entityList.get(conn).setVel(new Integer[]{0,0});
         }
     }
     @Override
@@ -86,6 +86,7 @@ public class SocketServer extends WebSocketServer {
         for (Entity entity : game.entityList.values()) {
             entity.applyVel();
             System.out.println(entity.getVel()[1]);
+            System.out.println(entity.getPos()[1]);
         }
         Gson gson = new Gson();
         String json = gson.toJson(game.entityList.values());
