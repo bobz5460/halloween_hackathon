@@ -68,7 +68,18 @@ public class SocketServer extends WebSocketServer {
         setConnectionLostTimeout(100);
     }
     public void StepTick(){
+        // because who cares about time complexity anyway
         for (Entity entity : game.entityList.values()) {
+            entity.collision = false;
+        }
+        for (Entity entity : game.entityList.values()) {
+            for (Entity entity2 : game.entityList.values()) {
+                if (entity.collidingWithEntity(entity2) && entity != entity2) {
+                    System.out.println("collision");
+                    entity.collision = true;
+                    entity2.collision = true;
+                }
+            }
             entity.applyVel();
         }
         Gson gson = new Gson();

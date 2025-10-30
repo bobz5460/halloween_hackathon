@@ -3,6 +3,7 @@ package org.example;
 public class Entity {
     String name, type;
     int x, y, velocity_x, velocity_y, hitbox_length, hitbox_height;
+    boolean collision = false;
     public Entity(String name, int x, int y, int velocity_x, int velocity_y, int hitbox_length, int hitbox_height, String type){
         this.name = name;
         this.x = x;
@@ -12,6 +13,7 @@ public class Entity {
         this.hitbox_length = hitbox_length;
         this.hitbox_height = hitbox_height;
         this.type = type;
+
 
     }
     public Integer[] getPos(){
@@ -36,5 +38,8 @@ public class Entity {
         System.out.println("apply vel");
         System.out.println(x + " " + y);
     }
+    public boolean collidingWithEntity(Entity e) {
+        return (x < e.x + e.hitbox_length && y < e.y + e.hitbox_height && x + hitbox_length > e.x && y + hitbox_height > e.y);
 
+    }
 }

@@ -11,7 +11,6 @@
 </body>
 <style>
     .box {
-        background: #ddd;
         border: none;
         position: absolute;
     }
@@ -42,6 +41,12 @@
             box.style.top = (target.offsetHeight - element['y']) + 'px';
             box.style.width = element['hitbox_length'] + 'px';
             box.style.height = element['hitbox_height'] + 'px';
+            if (element['collision'] == true){
+                box.style.backgroundColor = 'red';
+            }
+            else{
+                box.style.backgroundColor = 'gray';
+            }
             target.appendChild(box);
         }
     }
