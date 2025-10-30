@@ -1,10 +1,6 @@
 package org.example;
-import org.java_websocket.WebSocket;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
 import java.util.concurrent.*;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 
 public class Main {
     Game game = new Game();
@@ -13,7 +9,7 @@ public class Main {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     public void start() {
         server.start();
-        final long tickRate = 1; // ticks per second
+        final long tickRate = 60; // ticks per second
         long period = 1_000_000_000L / tickRate; // nanoseconds
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -25,8 +21,10 @@ public class Main {
     }
 
     public void tick() {
+        long startTime = System.currentTimeMillis();
         server.StepTick();
-        System.out.println("Ticked");
+        long endTime = System.currentTimeMillis();
+        System.out.println("Tick took "+ (endTime - startTime) +" ms");
     }
     public void stop() {
         scheduler.shutdownNow();

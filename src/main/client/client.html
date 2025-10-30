@@ -5,9 +5,26 @@
     <title>Title</title>
 </head>
 <body>
+<div id="target">
 
+</div>
 </body>
+<style>
+    .box {
+        background: #ddd;
+        border: none;
+        position: absolute;
+    }
+    #target {
+        margin: 15px;
+        background: #fff;
+        border: 1px solid #ccc;
+        min-height: 400px;
+        position: relative;
+    }
+</style>
 <script>
+    var target = document.getElementById('target');
     const chatSocket = new WebSocket(
         'ws://'
         + '127.0.0.1'
@@ -16,12 +33,38 @@
     chatSocket.onmessage = function (event) {
         const message = JSON.parse(event.data);
         console.log(message);
+        target.innerHTML = '';
+        for (const element of message){
+
+            var box = document.createElement('div');
+            box.className = 'box';
+            box.style.left = element['x'] + 'px';
+            box.style.top = (target.offsetHeight - element['y']) + 'px';
+            box.style.width = element['hitbox_length'] + 'px';
+            box.style.height = element['hitbox_height'] + 'px';
+            target.appendChild(box);
+        }
     }
     addEventListener("keydown", function (event) {
         if (event.key === 'ArrowUp') {
             event.preventDefault();
             chatSocket.send(JSON.stringify({'msg_type': 'direction', 'direction': 'up'}));
         }
+        else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            chatSocket.send(JSON.stringify({'msg_type': 'direction', 'direction': 'down'}));
+        }
+        else if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            chatSocket.send(JSON.stringify({'msg_type': 'direction', 'direction': 'right'}));
+        }
+        else if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            chatSocket.send(JSON.stringify({'msg_type': 'direction', 'direction': 'left'}));
+        }
+    })
+    addEventListener("keyup", function () {
+        chatSocket.send(JSON.stringify({'msg_type': 'direction', 'direction': 'none'}));
     })
 </script>
 </html>
