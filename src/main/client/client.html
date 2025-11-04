@@ -4,50 +4,72 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-<div id="target">
+<body style="margin:0;overflow:hidden">
+<canvas id="game"></canvas>
 
-</div>
 </body>
 <style>
-    .box {
-        border: none;
-        position: absolute;
-    }
-    #target {
-        margin: 15px;
-        background: #fff;
-        border: 1px solid #ccc;
-        min-height: 400px;
-        position: relative;
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
     }
 </style>
 <script>
-    var target = document.getElementById('target');
+    const bg = new Image();
+    bg.src = "https://www.lotpixel.com/images/26/banner.jpg";
+    const name = prompt("Please enter your name:")
+    const canvas = document.getElementById('game');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const WORLD = { width: 5000, height: 3000 };
+    let cameraX = 0;
+    let cameraY = 0;
+
+    function toScreen(worldX, worldY){
+        return {
+            x: worldX - cameraX + canvas.width/2,
+            y: worldY - cameraY + canvas.height/2}
+    };
     const chatSocket = new WebSocket(
         'ws://'
         + '127.0.0.1'
         + ':6767'
     );
+    chatSocket.addEventListener('open', () => {
+        console.log("WebSocket opened:", chatSocket);
+        const payload = JSON.stringify({ 'msg_type': 'connect', 'name': name });
+        chatSocket.send(payload);
+    });
     chatSocket.onmessage = function (event) {
         const message = JSON.parse(event.data);
         console.log(message);
-        target.innerHTML = '';
-        for (const element of message){
+        const originalWidth = bg.width;
+        const originalHeight = bg.height;
 
-            var box = document.createElement('div');
-            box.className = 'box';
-            box.style.left = element['x'] + 'px';
-            box.style.top = (target.offsetHeight - element['y']) + 'px';
-            box.style.width = element['hitbox_length'] + 'px';
-            box.style.height = element['hitbox_height'] + 'px';
+        const scaledWidth = originalWidth * 2;
+        const scaledHeight = originalHeight * 2;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(bg, canvas.width/2 - cameraX, canvas.height/2 - cameraY, scaledWidth, scaledHeight)
+        for (const element of message){
+            if (element['name'] === name){
+                console.log("camera")
+                cameraX = element['x'];
+                cameraY = element['y'];
+            }
+            const coords = toScreen(element['x'], element['y'])
+            ctx.beginPath();
             if (element['collision'] == true){
-                box.style.backgroundColor = 'red';
+                ctx.fillStyle = '#FF0000'
             }
             else{
-                box.style.backgroundColor = 'gray';
+                ctx.fillStyle = '#000000'
             }
-            target.appendChild(box);
+            ctx.fillRect(coords.x, coords.y, element['hitbox_length'], element['hitbox_height'])
+            ctx.font = '12px sans-serif';
+            ctx.fillText(element['name'], coords.x+element['hitbox_length']+10, coords.y+element['hitbox_height']);
+
         }
     }
     addEventListener("keydown", function (event) {
